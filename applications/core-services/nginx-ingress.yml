@@ -12,9 +12,15 @@ spec:
     helm:
       valueFiles:
       - $values/infrastructure/base/nginx-ingress/values.yaml
-  - repoURL: https://github.com/Damianjsp/homelab-gitops
+  - repoURL: https://github.com/YOUR_USERNAME/homelab-gitops
     targetRevision: main
     ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: ingress-nginx
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

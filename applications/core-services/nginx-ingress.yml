@@ -1,0 +1,110 @@
+# NGINX Ingress Controller ArgoCD Application
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-ingress
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://kubernetes.github.io/ingress-nginx
+    chart: ingress-nginx
+    targetRevision: 4.11.3  # Latest stable version
+    helm:
+      values: |
+        # NGINX Ingress Controller configuration for Pi 5 homelab
+        controller:
+          # Resource optimization for Pi 5
+          replicaCount: 1
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+          # LoadBalancer configuration via MetalLB
+          service:
+            type: LoadBalancer
+            loadBalancerIP: "192.168.79.30"  # Your current NGINX IP
+            annotations:
+              metallb.universe.tf/allow-shared-ip: "nginx-ingress"
+
+          # Node selector for ARM64
+          nodeSelector:
+            kubernetes.io/arch: arm64
+
+          # Ingress class configuration
+          ingressClassResource:
+            name: nginx
+            enabled: true
+            default: true
+            controllerValue: "k8s.io/ingress-nginx"
+
+          # Metrics configuration for Prometheus
+          metrics:
+            enabled: true
+            serviceMonitor:
+              enabled: true
+              additionalLabels:
+                app.kubernetes.io/part-of: nginx-ingress
+
+          # Configuration for homelab
+          config:
+            # Basic security headers
+            ssl-redirect: "false"
+            force-ssl-redirect: "false"
+
+            # Performance tuning for Pi
+            worker-processes: "2"
+            max-worker-connections: "1024"
+
+            # Logging
+            log-format-upstream: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_length $request_time [$proxy_upstream_name] [$proxy_alternative_upstream_name] $upstream_addr $upstream_response_length $upstream_response_time $upstream_status $req_id'
+
+          # Allow snippet annotations (if needed)
+          allowSnippetAnnotations: false
+
+          # Admission webhook configuration
+          admissionWebhooks:
+            enabled: true
+            patch:
+              nodeSelector:
+                kubernetes.io/arch: arm64
+
+        # Default backend (optional)
+        defaultBackend:
+          enabled: false
+
+        # RBAC configuration
+        rbac:
+          create: true
+
+        # Service account
+        serviceAccount:
+          create: true
+          name: nginx-ingress-controller
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingress-nginx
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true  # Important for Helm charts with CRDs
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+

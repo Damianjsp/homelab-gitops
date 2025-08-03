@@ -7,7 +7,6 @@ resources:
 - chromadb-deployment.yml
 - chromadb-service.yml
 - chromadb-pv.yml
-- chromadb-ingress.yml
 - chromadb-backup-cronjob.yml
 
 commonLabels:

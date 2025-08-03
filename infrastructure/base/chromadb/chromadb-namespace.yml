@@ -1,0 +1,7 @@
+# chromadb-namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai-services
+  labels:
+    name: ai-services

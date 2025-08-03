@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- chromadb-namespace.yml
+- chromadb-pvc.yml
+- chromadb-deployment.yml
+- chromadb-service.yml
+- chromadb-pv.yml
+- chromadb-ingress.yml
+- chromadb-backup-cronjob.yml
+
+commonLabels:
+  app.kubernetes.io/managed-by: argocd

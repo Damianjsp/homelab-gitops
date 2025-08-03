@@ -1,0 +1,105 @@
+# ArgoCD App-of-Apps root application
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homelab-apps
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Damianjsp/homelab-gitops
+    targetRevision: main
+    path: applications
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+---
+# AI Services Project
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: ai-services
+  namespace: argocd
+spec:
+  description: AI and Machine Learning Services
+  sourceRepos:
+  - 'https://github.com/Damianjsp/homelab-gitops'
+  destinations:
+  - namespace: ai-services
+    server: https://kubernetes.default.svc
+  - namespace: default
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  - group: ''
+    kind: Namespace
+  - group: ''
+    kind: PersistentVolume
+  - group: 'networking.k8s.io'
+    kind: NetworkPolicy
+  namespaceResourceWhitelist:
+  - group: ''
+    kind: ConfigMap
+  - group: ''
+    kind: Secret
+  - group: ''
+    kind: Service
+  - group: ''
+    kind: PersistentVolumeClaim
+  - group: 'apps'
+    kind: Deployment
+  - group: 'apps'
+    kind: StatefulSet
+  - group: 'networking.k8s.io'
+    kind: Ingress
+  roles:
+  - name: ai-services-admin
+    description: Admin access to AI services
+    policies:
+    - p, proj:ai-services:ai-services-admin, applications, *, ai-services/*, allow
+    groups:
+    - homelab-admins
+
+---
+# Core Services Project
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: core-services
+  namespace: argocd
+spec:
+  description: Core Infrastructure Services
+  sourceRepos:
+  - 'https://github.com/Damianjsp/homelab-gitops'
+  destinations:
+  - namespace: '*'
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  roles:
+  - name: core-services-admin
+    description: Admin access to core services
+    policies:
+    - p, proj:core-services:core-services-admin, applications, *, core-services/*, allow
+    groups:
+    - homelab-admins

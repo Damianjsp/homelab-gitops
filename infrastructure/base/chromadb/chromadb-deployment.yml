@@ -1,0 +1,76 @@
+# chromadb-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chromadb
+  namespace: ai-services
+  labels:
+    app: chromadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chromadb
+  template:
+    metadata:
+      labels:
+        app: chromadb
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: pi5-02
+        kubernetes.io/arch: arm64
+      containers:
+      - name: chromadb
+        image: chromadb/chroma:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: IS_PERSISTENT
+          value: "TRUE"
+        - name: PERSIST_DIRECTORY
+          value: "/data"
+        - name: ANONYMIZED_TELEMETRY
+          value: "FALSE"
+        - name: CHROMA_SERVER_HTTP_PORT
+          value: "8000"
+        - name: CHROMA_SERVER_HOST
+          value: "0.0.0.0"
+        - name: CHROMA_LOG_LEVEL
+          value: "INFO"
+        - name: CHROMA_SERVER_CORS_ALLOW_ORIGINS
+          value: '["*"]'
+        - name: CHROMA_SERVER_MAX_REQUEST_SIZE_BYTES
+          value: "33554432"
+        - name: CHROMA_SERVER_MAX_BATCH_SIZE
+          value: "1000"
+        - name: TZ
+          value: "Europe/Madrid"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1500m"
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        livenessProbe:
+          httpGet:
+            path: /api/v2/heartbeat
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /api/v2/heartbeat
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: chromadb-data-pvc

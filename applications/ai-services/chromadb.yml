@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: chromadb
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ai-services
+  source:
+    repoURL: https://github.com/Damianjsp/homelab-gitops
+    targetRevision: main
+    path: infrastructure/base/chromadb
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ai-services
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true  # Important: only sync resources that are out of sync
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

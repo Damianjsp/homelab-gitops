@@ -1,0 +1,22 @@
+# chromadb-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: chromadb-data-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /opt/chromadb-data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - pi5-02  # Your worker node

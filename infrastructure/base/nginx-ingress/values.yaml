@@ -52,7 +52,7 @@ controller:
 
   # Admission webhook configuration
   admissionWebhooks:
-    enabled: true
+    enabled: false
     patch:
       nodeSelector:
         kubernetes.io/arch: arm64

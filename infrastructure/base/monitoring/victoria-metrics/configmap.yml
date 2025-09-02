@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: victoriametrics-config
+  namespace: monitoring
+  labels:
+    app: victoriametrics
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 30s
+      evaluation_interval: 30s
+      external_labels:
+        cluster: 'homelab-k3s'
+        environment: 'production'
+
+    scrape_configs:
+      # All 4 Pi devices with existing node-exporters
+      - job_name: 'pi3b-dns-server'
+        static_configs:
+        - targets: ['192.168.79.2:9100']  # Pi 3B node-exporter
+          labels:
+            instance: 'pi3b'
+            role: 'dns-server'
+            service: 'node-exporter'
+
+      - job_name: 'pi4-media-server'
+        static_configs:
+        - targets: ['192.168.79.3:9100']  # Pi 4 node-exporter
+          labels:
+            instance: 'pi4'
+            role: 'media-server'
+            service: 'node-exporter'
+
+      - job_name: 'pi5-k3s-master'
+        static_configs:
+        - targets: ['192.168.79.4:9100']  # Pi 5 #1 node-exporter
+          labels:
+            instance: 'pi5-01'
+            role: 'k3s-master'
+            service: 'node-exporter'
+
+      - job_name: 'pi5-k3s-worker'
+        static_configs:
+        - targets: ['192.168.79.5:9100']  # Pi 5 #2 node-exporter
+          labels:
+            instance: 'pi5-02'
+            role: 'k3s-worker'
+            service: 'node-exporter'
+
+      # Pi-hole metrics (if you setup pihole-exporter later)
+      - job_name: 'pihole'
+        static_configs:
+        - targets: ['192.168.79.2:9617']  # pihole-exporter port
+          labels:
+            instance: 'pi3b'
+            role: 'dns-server'
+            service: 'pihole'
+
+      # Docker container metrics on Pi 4 (if you setup cAdvisor later)
+      - job_name: 'pi4-containers'
+        static_configs:
+        - targets: ['192.168.79.3:8080']  # cAdvisor port
+          labels:
+            instance: 'pi4'
+            role: 'media-server'
+            service: 'cadvisor'
+
+      # Kubernetes workloads with prometheus annotations
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+        - role: pod
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+          action: replace
+          regex: ([^:]+)(?::\d+)?;(\d+)
+          replacement: $1:$2
+          target_label: __address__
+        - source_labels: [__meta_kubernetes_pod_name]
+          target_label: pod
+        - source_labels: [__meta_kubernetes_namespace]
+          target_label: namespace
+        - source_labels: [__meta_kubernetes_pod_node_name]
+          target_label: node
+
+      # Kubernetes services with prometheus annotations
+      - job_name: 'kubernetes-services'
+        kubernetes_sd_configs:
+        - role: service
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+          action: replace
+          target_label: __metrics_path__
+          regex: (.+)
+        - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+          action: replace
+          regex: ([^:]+)(?::\d+)?;(\d+)
+          replacement: $1:$2
+          target_label: __address__
+        - source_labels: [__meta_kubernetes_service_name]
+          target_label: service
+        - source_labels: [__meta_kubernetes_namespace]
+          target_label: namespace

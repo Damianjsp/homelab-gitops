@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pihole-exporter
+  namespace: monitoring  # Match Deployment namespace
+  labels:
+    app: pihole-exporter
+spec:
+  selector:
+    app: pihole-exporter
+  ports:
+  - port: 9618
+    targetPort: 9618
+    protocol: TCP
+    name: metrics
+  type: ClusterIP  # Internal service for VictoriaMetrics to scrape

@@ -13,3 +13,5 @@ resources:
   - grafana/pvc.yml
   - grafana/deployment.yml
   - grafana/service.yml
+  - pihole-exporter/deployment.yml
+  - pihole-exporter/service.yml

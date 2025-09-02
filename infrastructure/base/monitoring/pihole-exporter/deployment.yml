@@ -17,15 +17,15 @@ spec:
     spec:
       containers:
       - name: pihole-exporter
-        image: mferrazz/pihole-exporter:latest  # ARM-compatible for k3s nodes
+        image: ekofr/pihole-exporter:v1.2.0  # ARM-compatible for k3s nodes
         env:
-        - name: PIHOLE_API_URL
-          value: "http://pi3.homelab:80/admin/api.php"  # Replace with Pi’s IP (e.g., 192.168.1.100)
-        - name: PIHOLE_PASSWORD
+        - name: PIHOLE_HOSTNAME
+          value: "http://pi3.homelab"  # Replace with Pi’s IP (e.g., 192.168.1.100)
+        - name: PIHOLE_API_TOKEN
           valueFrom:
             secretKeyRef:
               name: pihole-exporter-secret
-              key: PIHOLE_PASSWORD
+              key: PIHOLE_API_TOKEN
         ports:
         - containerPort: 9618
           name: metrics

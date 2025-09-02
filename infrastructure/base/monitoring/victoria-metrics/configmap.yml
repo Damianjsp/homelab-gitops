@@ -14,7 +14,52 @@ data:
         environment: 'production'
 
     scrape_configs:
-      # All 4 Pi devices with existing node-exporters
+      # Combined job for all Raspberry Pi devices
+      - job_name: 'homelab-pi'
+        static_configs:
+        - targets: 
+          - '192.168.79.2:9100'  # Pi 3B - DNS server
+          - '192.168.79.3:9100'  # Pi 4 - Media server  
+          - '192.168.79.4:9100'  # Pi 5 #1 - K3s master
+          - '192.168.79.5:9100'  # Pi 5 #2 - K3s worker
+          labels:
+            cluster: 'homelab-k3s'
+            environment: 'production'
+        relabel_configs:
+        - source_labels: [__address__]
+          regex: '192\.168\.79\.2:9100'
+          target_label: instance
+          replacement: 'pi3b'
+        - source_labels: [__address__]
+          regex: '192\.168\.79\.2:9100'
+          target_label: role
+          replacement: 'dns-server'
+        - source_labels: [__address__]
+          regex: '192\.168\.79\.3:9100'
+          target_label: instance
+          replacement: 'pi4'
+        - source_labels: [__address__]
+          regex: '192\.168\.79\.3:9100'
+          target_label: role
+          replacement: 'media-server'
+        - source_labels: [__address__]
+          regex: '192\.168\.79\.4:9100'
+          target_label: instance
+          replacement: 'pi5-01'
+        - source_labels: [__address__]
+          regex: '192\.168\.79\.4:9100'
+          target_label: role
+          replacement: 'k3s-master'
+        - source_labels: [__address__]
+          regex: '192\.168\.79\.5:9100'
+          target_label: instance
+          replacement: 'pi5-02'
+        - source_labels: [__address__]
+          regex: '192\.168\.79\.5:9100'
+          target_label: role
+          replacement: 'k3s-worker'
+
+      # Individual Pi devices (for backward compatibility)
       - job_name: 'pi3b-dns-server'
         static_configs:
         - targets: ['192.168.79.2:9100']  # Pi 3B node-exporter

@@ -48,7 +48,7 @@ spec:
         - name: GF_PATHS_PROVISIONING
           value: /etc/grafana/provisioning
         - name: GF_INSTALL_PLUGINS
-          value: ""  # No plugins to save resources
+          value: "grafana-piechart-panel"
         resources:
           requests:
             memory: "128Mi"

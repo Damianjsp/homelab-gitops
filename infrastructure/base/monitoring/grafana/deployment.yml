@@ -69,6 +69,8 @@ spec:
           mountPath: /etc/grafana/provisioning/datasources
         - name: grafana-provisioning-dashboards
           mountPath: /etc/grafana/provisioning/dashboards
+        - name: grafana-dashboards
+          mountPath: /etc/grafana/dashboards
         livenessProbe:
           httpGet:
             path: /api/health
@@ -113,3 +115,9 @@ spec:
           items:
           - key: dashboards.yaml
             path: dashboards.yaml
+      - name: grafana-dashboards
+        configMap:
+          name: grafana-config
+          items:
+          - key: node-exporter-full.json
+            path: node-exporter-full.json

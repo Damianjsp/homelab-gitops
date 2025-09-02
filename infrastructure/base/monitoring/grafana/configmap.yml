@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+  namespace: monitoring
+  labels:
+    app: grafana
+data:
+  grafana.ini: |
+    [server]
+    http_port = 3000
+    domain = 192.168.79.37  # Use IP instead of domain
+    root_url = http://192.168.79.37:3000
+
+    [database]
+    type = sqlite3
+    path = /var/lib/grafana/grafana.db
+
+    [analytics]
+    reporting_enabled = false
+    check_for_updates = false
+
+    [security]
+    admin_user = $__env{GF_SECURITY_ADMIN_USER}
+    admin_password = $__env{GF_SECURITY_ADMIN_PASSWORD}
+
+    [plugins]
+    enable_alpha = false
+
+    [log]
+    level = warn
+    mode = console
+
+    [alerting]
+    enabled = false  # Save resources
+
+    [unified_alerting]
+    enabled = false
+
+    [auth.anonymous]
+    enabled = false
+
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - name: VictoriaMetrics
+      type: prometheus
+      url: http://victoriametrics.monitoring.svc.cluster.local:8428
+      access: proxy
+      isDefault: true
+      editable: true
+      jsonData:
+        httpMethod: POST
+        manageAlerts: false
+        prometheusType: Prometheus
+        prometheusVersion: 2.40.0
+        cacheLevel: 'High'
+
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+    - name: 'homelab'
+      orgId: 1
+      folder: 'Homelab'
+      type: file
+      disableDeletion: false
+      editable: true
+      updateIntervalSeconds: 60
+      allowUiUpdates: true
+      options:
+        path: /etc/grafana/dashboards

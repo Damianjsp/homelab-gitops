@@ -74,7 +74,7 @@ data:
       # Pi-hole metrics (if you setup pihole-exporter later)
       - job_name: 'pihole'
         static_configs:
-        - targets: ['pihole-exporter.monitoring.svc.cluster.local:9618']  # pihole-exporter port
+        - targets: ['pihole-exporter.monitoring.svc.cluster.local:9617']  # pihole-exporter port
           labels:
             instance: 'pi3b'
             role: 'dns-server'

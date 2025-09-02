@@ -72,9 +72,8 @@ data:
 
   node-exporter-full.json: |
     {
-      "dashboard": {
-        "id": null,
-        "title": "Node Exporter Full",
+      "id": null,
+      "title": "Node Exporter Full",
         "tags": ["node-exporter", "homelab"],
         "timezone": "browser",
         "panels": [
@@ -172,5 +171,4 @@ data:
           ]
         },
         "refresh": "30s"
-      }
     }

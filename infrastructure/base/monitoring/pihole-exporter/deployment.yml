@@ -25,7 +25,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: pihole-exporter-secret
-              key: PIHOLE_API_TOKEN
+              key: PIHOLE_PASSWORD
         ports:
         - containerPort: 9618
           name: metrics

@@ -20,7 +20,7 @@ spec:
         image: ekofr/pihole-exporter:v1.2.0  # ARM-compatible for k3s nodes
         env:
         - name: PIHOLE_HOSTNAME
-          value: "http://pi3.homelab"  # Replace with Pi’s IP (e.g., 192.168.1.100)
+          value: 192.168.79.2  # Replace with Pi’s IP (e.g., 192.168.1.100)
         - name: PIHOLE_API_TOKEN
           valueFrom:
             secretKeyRef:

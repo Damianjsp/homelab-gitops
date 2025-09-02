@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole-exporter
+  namespace: monitoring  # Adjust if using a different namespace (e.g., default)
+  labels:
+    app: pihole-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole-exporter
+  template:
+    metadata:
+      labels:
+        app: pihole-exporter
+    spec:
+      containers:
+      - name: pihole-exporter
+        image: mferrazz/pihole-exporter:latest  # ARM-compatible for k3s nodes
+        env:
+        - name: PIHOLE_API_URL
+          value: "http://pi3.homelab:80/admin/api.php"  # Replace with Pi’s IP (e.g., 192.168.1.100)
+        - name: PIHOLE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pihole-exporter-secret
+              key: PIHOLE_PASSWORD
+        ports:
+        - containerPort: 9618
+          name: metrics
+        resources:
+          requests:
+            cpu: "10m"    # Minimal CPU
+            memory: "32Mi"  # Low memory footprint
+          limits:
+            cpu: "100m"
+            memory: "64Mi"  # Constrain to avoid overuse

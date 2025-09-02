@@ -119,5 +119,9 @@ spec:
         configMap:
           name: grafana-config
           items:
-          - key: node-exporter-full.json
-            path: node-exporter-full.json
+          - key: node-exporter-1860.json
+            path: node-exporter-1860.json
+          - key: pihole-exporter-10176.json
+            path: pihole-exporter-10176.json
+          - key: k3s-cluster-16450.json
+            path: k3s-cluster-16450.json

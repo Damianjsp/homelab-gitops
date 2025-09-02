@@ -70,59 +70,95 @@ data:
       options:
         path: /etc/grafana/dashboards
 
-  node-exporter-1860.json: |
+  node-exporter-full.json: |
     {
       "dashboard": {
-        "id": 1860,
+        "id": null,
         "title": "Node Exporter Full",
-        "tags": ["node-exporter"],
-        "description": "Node Exporter Full Dashboard - ID 1860",
-        "__inputs": [
+        "tags": ["node-exporter", "homelab"],
+        "timezone": "browser",
+        "panels": [
           {
-            "name": "DS_PROMETHEUS",
-            "label": "VictoriaMetrics",
-            "description": "",
-            "type": "datasource",
-            "pluginId": "prometheus"
+            "id": 1,
+            "title": "CPU Usage",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\",instance=~\".*\"}[5m])) * 100)",
+                "refId": "A"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "color": {"mode": "palette-classic"}
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Memory Usage",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "((node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes) * 100",
+                "refId": "A"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "color": {"mode": "palette-classic"}
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Disk Usage",
+            "type": "timeseries",
+            "targets": [
+              {
+                "expr": "100 - ((node_filesystem_avail_bytes{mountpoint=\"/\",fstype!=\"rootfs\"} * 100) / node_filesystem_size_bytes{mountpoint=\"/\",fstype!=\"rootfs\"})",
+                "refId": "A"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "percent",
+                "color": {"mode": "palette-classic"}
+              }
+            },
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+          },
+          {
+            "id": 4,
+            "title": "Network Traffic",
+            "type": "timeseries",
+            "targets": [
+              {
+                "expr": "irate(node_network_receive_bytes_total{device!=\"lo\"}[5m])",
+                "legendFormat": "{{device}} - Receive",
+                "refId": "A"
+              },
+              {
+                "expr": "irate(node_network_transmit_bytes_total{device!=\"lo\"}[5m])",
+                "legendFormat": "{{device}} - Transmit",
+                "refId": "B"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "binBps",
+                "color": {"mode": "palette-classic"}
+              }
+            },
+            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
           }
         ],
-        "__requires": [
-          {
-            "type": "grafana",
-            "id": "grafana",
-            "name": "Grafana",
-            "version": "8.0.0"
-          },
-          {
-            "type": "panel",
-            "id": "piechart",
-            "name": "Pie chart",
-            "version": ""
-          },
-          {
-            "type": "panel",
-            "id": "stat",
-            "name": "Stat",
-            "version": ""
-          },
-          {
-            "type": "panel",
-            "id": "timeseries",
-            "name": "Time series",
-            "version": ""
-          },
-          {
-            "type": "datasource",
-            "id": "prometheus",
-            "name": "Prometheus",
-            "version": "1.0.0"
-          }
-        ],
-        "refresh": "30s",
-        "time": {
-          "from": "now-1h",
-          "to": "now"
-        },
+        "time": {"from": "now-1h", "to": "now"},
+        "timepicker": {},
         "templating": {
           "list": [
             {
@@ -131,181 +167,10 @@ data:
               "query": "label_values(node_cpu_seconds_total, instance)",
               "refresh": 1,
               "includeAll": true,
-              "allValue": ".*",
-              "datasource": "VictoriaMetrics"
-            }
-          ]
-        }
-      }
-    }
-
-  pihole-exporter-10176.json: |
-    {
-      "dashboard": {
-        "id": 10176,
-        "title": "Pi-hole Exporter",
-        "tags": ["pihole", "dns"],
-        "description": "Pi-hole Exporter Dashboard - ID 10176",
-        "refresh": "30s",
-        "time": {
-          "from": "now-1h",
-          "to": "now"
-        },
-        "panels": [
-          {
-            "id": 1,
-            "title": "Queries Over Time",
-            "type": "timeseries",
-            "targets": [
-              {
-                "expr": "rate(pihole_dns_queries_today[5m]) * 60",
-                "legendFormat": "Queries/min",
-                "refId": "A"
-              }
-            ],
-            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
-          },
-          {
-            "id": 2,
-            "title": "Blocked Queries",
-            "type": "stat",
-            "targets": [
-              {
-                "expr": "pihole_ads_blocked_today",
-                "refId": "A"
-              }
-            ],
-            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
-          },
-          {
-            "id": 3,
-            "title": "Top Blocked Domains",
-            "type": "piechart",
-            "targets": [
-              {
-                "expr": "topk(10, pihole_top_blocked_domains)",
-                "refId": "A"
-              }
-            ],
-            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
-          }
-        ]
-      }
-    }
-
-  k3s-cluster-16450.json: |
-    {
-      "dashboard": {
-        "id": 16450,
-        "title": "Kubernetes / Views / K3s Cluster",
-        "tags": ["kubernetes", "k3s", "cluster"],
-        "description": "K3s Cluster Monitoring Dashboard - ID 16450",
-        "refresh": "30s",
-        "time": {
-          "from": "now-1h",
-          "to": "now"
-        },
-        "templating": {
-          "list": [
-            {
-              "name": "cluster",
-              "type": "query",
-              "query": "label_values(kube_node_info, cluster)",
-              "refresh": 1,
-              "includeAll": false,
-              "datasource": "VictoriaMetrics"
-            },
-            {
-              "name": "node",
-              "type": "query",
-              "query": "label_values(kube_node_info{cluster=\"$cluster\"}, node)",
-              "refresh": 1,
-              "includeAll": true,
-              "datasource": "VictoriaMetrics"
+              "allValue": ".*"
             }
           ]
         },
-        "panels": [
-          {
-            "id": 1,
-            "title": "Cluster CPU Usage",
-            "type": "timeseries",
-            "targets": [
-              {
-                "expr": "100 - (avg(irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
-                "legendFormat": "CPU Usage %",
-                "refId": "A"
-              }
-            ],
-            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
-          },
-          {
-            "id": 2,
-            "title": "Cluster Memory Usage",
-            "type": "timeseries",
-            "targets": [
-              {
-                "expr": "100 * (1 - ((avg(node_memory_MemAvailable_bytes) or avg(node_memory_MemFree_bytes)) / avg(node_memory_MemTotal_bytes)))",
-                "legendFormat": "Memory Usage %",
-                "refId": "A"
-              }
-            ],
-            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
-          },
-          {
-            "id": 3,
-            "title": "Pods Running",
-            "type": "stat",
-            "targets": [
-              {
-                "expr": "sum(kube_pod_status_phase{phase=\"Running\"})",
-                "refId": "A"
-              }
-            ],
-            "gridPos": {"h": 4, "w": 6, "x": 0, "y": 8}
-          },
-          {
-            "id": 4,
-            "title": "Nodes Ready",
-            "type": "stat",
-            "targets": [
-              {
-                "expr": "sum(kube_node_status_condition{condition=\"Ready\", status=\"true\"})",
-                "refId": "A"
-              }
-            ],
-            "gridPos": {"h": 4, "w": 6, "x": 6, "y": 8}
-          },
-          {
-            "id": 5,
-            "title": "Namespaces",
-            "type": "stat",
-            "targets": [
-              {
-                "expr": "count(count by (namespace)(kube_pod_info))",
-                "refId": "A"
-              }
-            ],
-            "gridPos": {"h": 4, "w": 6, "x": 12, "y": 8}
-          },
-          {
-            "id": 6,
-            "title": "Network I/O",
-            "type": "timeseries",
-            "targets": [
-              {
-                "expr": "sum(rate(node_network_receive_bytes_total[5m]))",
-                "legendFormat": "Receive",
-                "refId": "A"
-              },
-              {
-                "expr": "sum(rate(node_network_transmit_bytes_total[5m]))",
-                "legendFormat": "Transmit",
-                "refId": "B"
-              }
-            ],
-            "gridPos": {"h": 8, "w": 24, "x": 0, "y": 12}
-          }
-        ]
+        "refresh": "30s"
       }
     }

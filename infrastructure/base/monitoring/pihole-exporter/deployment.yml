@@ -21,7 +21,7 @@ spec:
         env:
         - name: PIHOLE_HOSTNAME
           value: 192.168.79.2  # Replace with Pi’s IP (e.g., 192.168.1.100)
-        - name: PIHOLE_API_TOKEN
+        - name: PIHOLE_PASSWORD
           valueFrom:
             secretKeyRef:
               name: pihole-exporter-secret

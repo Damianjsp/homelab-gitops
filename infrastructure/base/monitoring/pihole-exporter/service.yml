@@ -9,8 +9,8 @@ spec:
   selector:
     app: pihole-exporter
   ports:
-  - port: 9618
-    targetPort: 9618
+  - port: 9617
+    targetPort: 9617
     protocol: TCP
     name: metrics
   type: ClusterIP  # Internal service for VictoriaMetrics to scrape

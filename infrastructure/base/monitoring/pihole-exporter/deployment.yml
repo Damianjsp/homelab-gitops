@@ -27,7 +27,7 @@ spec:
               name: pihole-exporter-secret
               key: PIHOLE_PASSWORD
         ports:
-        - containerPort: 9618
+        - containerPort: 9617
           name: metrics
         resources:
           requests:

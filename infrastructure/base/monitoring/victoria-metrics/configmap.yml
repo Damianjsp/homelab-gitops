@@ -83,7 +83,7 @@ data:
       # Docker container metrics on Pi 4 (if you setup cAdvisor later)
       - job_name: 'pi4-containers'
         static_configs:
-        - targets: ['192.168.79.3:8080']  # cAdvisor port
+        - targets: ['192.168.79.3:18080']  # cAdvisor port
           labels:
             instance: 'pi4'
             role: 'media-server'

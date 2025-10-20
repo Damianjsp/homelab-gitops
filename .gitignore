@@ -20,3 +20,5 @@ credentials.md
 # Documentation that may contain sensitive info
 POSTGRESQL-SETUP-*.md
 setup-*.sh
+*.md
+!README.md

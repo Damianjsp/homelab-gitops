@@ -21,7 +21,7 @@ spec:
         kubernetes.io/arch: arm64
       containers:
       - name: n8n
-        image: n8n:latest
+        image: n8nio/n8n:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5678
@@ -87,9 +87,9 @@ spec:
           failureThreshold: 3
 
         securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          allowPrivilegeEscalation: false
+          runAsNonRoot: false
+          runAsUser: 0
+          allowPrivilegeEscalation: true
           readOnlyRootFilesystem: false
           capabilities:
             drop:

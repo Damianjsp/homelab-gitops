@@ -27,18 +27,9 @@ server:
     annotations:
       metallb.universe.tf/allow-shared-ip: "argocd"
 
-  # Ingress configuration
+  # Ingress configuration - disabled in favor of LoadBalancer
   ingress:
-    enabled: true
-    ingressClassName: nginx
-    hosts:
-      - argocd.homelab
-    tls: []
-    annotations:
-      nginx.ingress.kubernetes.io/ssl-redirect: "false"
-      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-      nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    enabled: false
 
   # ArgoCD server configuration
   config:

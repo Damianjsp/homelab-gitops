@@ -1,3 +1,12 @@
 local-backup-migration/
 CLAUDE.md
 .claude
+
+# Secrets Management
+# Never commit plaintext secrets - use sealed-secrets instead
+*-secret.yml
+!*-sealed-secret.yml
+/tmp/
+*.secret
+.env
+.env.local

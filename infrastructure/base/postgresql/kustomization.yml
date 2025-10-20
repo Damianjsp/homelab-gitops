@@ -8,7 +8,7 @@ resources:
   - postgresql-namespace.yml
   - postgresql-pv.yml
   - postgresql-pvc.yml
-  - postgresql-secret.yml
+  - postgresql-sealed-secret.yml  # Using sealed secret instead of plaintext
   - postgresql-configmap.yml
   - postgresql-deployment.yml
   - postgresql-service.yml

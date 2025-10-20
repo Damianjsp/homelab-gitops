@@ -1,0 +1,32 @@
+# PostgreSQL ConfigMap for additional configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgresql-config
+  namespace: postgresql
+  labels:
+    app: postgresql
+data:
+  # PostgreSQL configuration
+  postgresql.conf: |
+    # Connection settings
+    max_connections = 200
+    shared_buffers = 128MB
+    effective_cache_size = 512MB
+    maintenance_work_mem = 32MB
+    checkpoint_completion_target = 0.9
+    wal_buffers = 16MB
+    default_statistics_target = 100
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+    work_mem = 655kB
+    min_wal_size = 4GB
+    max_wal_size = 16GB
+
+    # Logging
+    log_statement = 'all'
+    log_duration = on
+    log_connections = on
+    log_disconnections = on
+    log_lock_waits = on
+    log_temp_files = 0

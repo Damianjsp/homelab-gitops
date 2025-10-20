@@ -1,0 +1,22 @@
+# PostgreSQL PersistentVolume - 50Gi
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgresql-data-pv
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /opt/postgresql-data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - pi5-02  # Worker node with more storage

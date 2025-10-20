@@ -169,3 +169,49 @@ spec:
     - p, proj:homelab:homelab-admin, repositories, *, *, allow
     groups:
     - homelab:admins
+
+---
+# Data Services Project
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: data-services
+  namespace: argocd
+spec:
+  description: Data and Database Services
+  sourceRepos:
+  - 'https://github.com/Damianjsp/homelab-gitops'
+  destinations:
+  - namespace: postgresql
+    server: https://kubernetes.default.svc
+  - namespace: default
+    server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+  - group: ''
+    kind: Namespace
+  - group: ''
+    kind: PersistentVolume
+  - group: 'networking.k8s.io'
+    kind: NetworkPolicy
+  namespaceResourceWhitelist:
+  - group: ''
+    kind: ConfigMap
+  - group: ''
+    kind: Secret
+  - group: ''
+    kind: Service
+  - group: ''
+    kind: PersistentVolumeClaim
+  - group: 'apps'
+    kind: Deployment
+  - group: 'apps'
+    kind: StatefulSet
+  - group: 'networking.k8s.io'
+    kind: Ingress
+  roles:
+  - name: data-services-admin
+    description: Admin access to data services
+    policies:
+    - p, proj:data-services:data-services-admin, applications, *, data-services/*, allow
+    groups:
+    - homelab-admins

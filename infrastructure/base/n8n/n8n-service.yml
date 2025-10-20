@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n
+  namespace: ai-services
+  labels:
+    app: n8n
+  annotations:
+    description: "N8N Workflow Automation Service"
+spec:
+  type: ClusterIP
+  selector:
+    app: n8n
+  ports:
+  - name: http
+    port: 5678
+    targetPort: 5678
+    protocol: TCP
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800

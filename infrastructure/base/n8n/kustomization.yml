@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- n8n-namespace.yml
+- n8n-pv.yml
+- n8n-pvc.yml
+- n8n-configmap.yml
+- n8n-secret.yml
+- n8n-service-account.yml
+- n8n-db-init-job.yml
+- n8n-deployment.yml
+- n8n-service.yml
+- n8n-ingress.yml
+
+commonLabels:
+  app.kubernetes.io/managed-by: argocd
+  app.kubernetes.io/version: "latest"

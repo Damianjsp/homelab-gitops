@@ -1,0 +1,79 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: n8n-db-init
+  namespace: ai-services
+  labels:
+    app: n8n
+spec:
+  backoffLimit: 5
+  ttlSecondsAfterFinished: 3600  # Keep job for 1 hour, then clean up
+  template:
+    spec:
+      serviceAccountName: n8n
+      nodeSelector:
+        kubernetes.io/hostname: pi5-02
+        kubernetes.io/arch: arm64
+      containers:
+      - name: db-init
+        image: postgres:16-alpine
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+
+          echo "Waiting for PostgreSQL to be ready..."
+          until PGPASSWORD="$POSTGRES_PASSWORD" pg_isready -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d postgres; do
+            echo "PostgreSQL is unavailable - sleeping"
+            sleep 2
+          done
+
+          echo "PostgreSQL is ready!"
+
+          # Create n8n database
+          echo "Creating n8n database..."
+          PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d postgres -c \
+            "CREATE DATABASE n8n;" 2>/dev/null || echo "Database n8n already exists"
+
+          # Create n8n user if it doesn't exist
+          echo "Creating n8n user..."
+          PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d postgres -c \
+            "CREATE USER n8n WITH ENCRYPTED PASSWORD '$N8N_DB_PASSWORD';" 2>/dev/null || echo "User n8n already exists"
+
+          # Grant privileges
+          echo "Granting privileges..."
+          PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d postgres -c \
+            "GRANT ALL PRIVILEGES ON DATABASE n8n TO n8n;"
+
+          # Additional schema privileges
+          PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d n8n -c \
+            "GRANT CREATE ON SCHEMA public TO n8n;"
+
+          echo "N8N database initialization complete!"
+        env:
+        - name: POSTGRES_HOST
+          value: "postgresql"  # Your existing PostgreSQL service
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-credentials
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-credentials
+              key: POSTGRES_PASSWORD
+        - name: N8N_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: n8n-secrets
+              key: DB_POSTGRESDB_PASSWORD
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      restartPolicy: Never

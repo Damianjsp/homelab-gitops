@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- redis-namespace.yml
+- redis-pv.yml
+- redis-pvc.yml
+- redis-configmap.yml
+- redis-secret.yml
+- redis-service-account.yml
+- redis-deployment.yml
+- redis-service.yml
+
+commonLabels:
+  app.kubernetes.io/managed-by: argocd
+  app.kubernetes.io/version: "7-alpine"

@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-n8n-config
+  namespace: ai-services
+  labels:
+    app: redis-n8n
+data:
+  redis.conf: |
+    # Redis configuration for N8N
+    port 6379
+    bind 0.0.0.0
+
+    # Persistence
+    save 900 1
+    save 300 10
+    save 60 10000
+
+    # AOF - Append Only File (recommended for better durability)
+    appendonly yes
+    appendfsync everysec
+
+    # Memory management
+    maxmemory 1gb
+    maxmemory-policy allkeys-lru
+
+    # Logging
+    loglevel notice
+
+    # Database
+    databases 16
+
+    # Security
+    requirepass redis-secure-password-change-me
+
+    # Connection handling
+    timeout 0
+    tcp-backlog 511
+    tcp-keepalive 300
+
+    # Disable dangerous commands in production
+    rename-command FLUSHDB ""
+    rename-command FLUSHALL ""
+    rename-command KEYS ""

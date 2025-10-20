@@ -10,7 +10,3 @@ resources:
 - redis-deployment.yml
 - redis-service.yml
 - redis-loadbalancer.yml
-
-commonLabels:
-  app.kubernetes.io/managed-by: argocd
-  app.kubernetes.io/version: "7-alpine"

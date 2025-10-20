@@ -10,7 +10,7 @@ resources:
 - n8n-service-account.yml
 - n8n-deployment.yml
 - n8n-service.yml
-- n8n-ingress.yml
+- n8n-loadbalancer.yml
 
 commonLabels:
   app.kubernetes.io/managed-by: argocd

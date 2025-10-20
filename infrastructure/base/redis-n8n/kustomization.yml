@@ -10,6 +10,7 @@ resources:
 - redis-service-account.yml
 - redis-deployment.yml
 - redis-service.yml
+- redis-loadbalancer.yml
 
 commonLabels:
   app.kubernetes.io/managed-by: argocd

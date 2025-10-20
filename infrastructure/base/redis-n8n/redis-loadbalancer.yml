@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-n8n-external
+  namespace: ai-services
+  labels:
+    app: redis-n8n
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "redis-n8n"
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 192.168.79.39
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    app: redis-n8n

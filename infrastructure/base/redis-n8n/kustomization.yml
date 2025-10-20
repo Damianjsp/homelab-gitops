@@ -6,7 +6,7 @@ resources:
 - redis-pv.yml
 - redis-pvc.yml
 - redis-configmap.yml
-- redis-secret.yml
+- redis-sealed-secret.yml
 - redis-service-account.yml
 - redis-deployment.yml
 - redis-service.yml

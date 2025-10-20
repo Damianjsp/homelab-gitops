@@ -6,7 +6,7 @@ resources:
 - n8n-pv.yml
 - n8n-pvc.yml
 - n8n-configmap.yml
-- n8n-secret.yml
+- n8n-sealed-secret.yml
 - n8n-service-account.yml
 - n8n-db-init-job.yml
 - n8n-deployment.yml

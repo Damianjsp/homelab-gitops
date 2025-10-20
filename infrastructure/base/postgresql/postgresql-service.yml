@@ -1,4 +1,4 @@
-# PostgreSQL Service
+# PostgreSQL Service - LoadBalancer for local network access
 apiVersion: v1
 kind: Service
 metadata:
@@ -6,8 +6,11 @@ metadata:
   namespace: postgresql
   labels:
     app: postgresql
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "postgresql"
 spec:
-  type: ClusterIP
+  type: LoadBalancer
+  loadBalancerIP: 192.168.79.30
   ports:
   - port: 5432
     targetPort: 5432

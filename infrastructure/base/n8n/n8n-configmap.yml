@@ -34,6 +34,7 @@ data:
   LOG_LEVEL: "info"
   N8N_LOG_OUTPUT: "console"
   N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
+  N8N_SECURE_COOKIE: "false"
   TZ: "Europe/Madrid"
 
   # Telemetry (disabled)

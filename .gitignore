@@ -2,7 +2,7 @@ local-backup-migration/
 CLAUDE.md
 .claude
 
-# Secrets Management
+# Secrets Management - CRITICAL
 # Never commit plaintext secrets - use sealed-secrets instead
 *-secret.yml
 !*-sealed-secret.yml
@@ -10,3 +10,13 @@ CLAUDE.md
 *.secret
 .env
 .env.local
+*-CREDENTIALS.md
+*-credentials.md
+CREDENTIALS.md
+credentials.md
+*.creds
+.credentials
+
+# Documentation that may contain sensitive info
+POSTGRESQL-SETUP-*.md
+setup-*.sh

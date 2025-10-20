@@ -4,10 +4,7 @@ kind: Kustomization
 namespace: sealed-secrets
 
 resources:
-  - sealed-secrets-namespace.yml
-  - sealed-secrets-rbac.yml
-  - sealed-secrets-deployment.yml
-  - sealed-secrets-service.yml
+  - sealed-secrets-controller.yml
 
 labels:
   - includeSelectors: true

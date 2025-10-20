@@ -8,23 +8,65 @@ This directory uses **Sealed Secrets** to securely manage PostgreSQL credentials
 - **Encryption**: Only decryptable on your specific Kubernetes cluster
 - **Storage**: Plaintext secrets are stored in `.gitignore`, sealed versions in Git
 
+## Deployment Order (Important!)
+
+⚠️ **IMPORTANT**: Deploy sealed-secrets controller BEFORE generating sealed secrets!
+
+1. **Phase 1**: Deploy sealed-secrets controller via ArgoCD
+2. **Phase 2**: Generate and seal PostgreSQL credentials
+3. **Phase 3**: Deploy PostgreSQL with sealed secrets
+
 ## Setup Instructions
 
-### Prerequisites
+### Step 1: Install Prerequisites
 
-1. Sealed Secrets controller must be installed (handled by ArgoCD)
-2. `kubeseal` CLI tool installed locally
+1. **Install kubeseal CLI** (locally on your machine):
 
 ```bash
-# Install kubeseal (macOS)
+# macOS
 brew install kubeseal
 
 # Or download from: https://github.com/getsops/sealed-secrets/releases
 ```
 
-### Generating PostgreSQL Secrets
+2. **Wait for sealed-secrets controller** to be deployed by ArgoCD:
 
-1. **Create a plaintext secret (locally, never commit)**:
+```bash
+# Check if controller is running
+kubectl get pods -n sealed-secrets
+kubectl logs -n sealed-secrets deployment/sealed-secrets-controller
+```
+
+The controller must be running before you can seal secrets!
+
+### Step 2: Deploy Sealed-Secrets Controller
+
+The sealed-secrets controller is managed by ArgoCD in `applications/core-services/sealed-secrets.yml`
+
+When ArgoCD syncs, it will automatically deploy:
+
+- Sealed-secrets controller deployment
+- RBAC permissions
+- Service for kubeseal to connect to
+
+**Verify deployment**:
+
+```bash
+kubectl get deployment -n sealed-secrets
+kubectl get sealedsecrets --all-namespaces
+```
+
+### Step 3: Generate and Seal PostgreSQL Credentials
+
+⚠️ **Only proceed after sealed-secrets controller is running!**
+
+Verify the controller is ready:
+
+```bash
+kubectl wait --for=condition=available --timeout=300s deployment/sealed-secrets-controller -n sealed-secrets
+```
+
+#### Create plaintext secret (locally, never commit)
 
 ```bash
 kubectl create secret generic postgresql-credentials \
@@ -35,7 +77,9 @@ kubectl create secret generic postgresql-credentials \
   --dry-run=client -o yaml > /tmp/pg-secret.yml
 ```
 
-2. **Seal the secret** (only encrypts with your cluster's key):
+#### Seal the secret
+
+Only encrypts with your cluster's key (safe to commit!):
 
 ```bash
 kubeseal \
@@ -45,25 +89,33 @@ kubeseal \
   > infrastructure/base/postgresql/postgresql-sealed-secret.yml
 ```
 
-3. **Verify** the sealed secret was created:
+#### Verify sealed secret was created
 
 ```bash
 cat infrastructure/base/postgresql/postgresql-sealed-secret.yml
 ```
 
-4. **Clean up** the plaintext secret:
+You should see `encryptedData` with encrypted values - this is what gets committed to Git.
+
+#### Clean up the plaintext secret
 
 ```bash
 rm /tmp/pg-secret.yml
 ```
 
-5. **Update** `postgresql-secret.yml` with a note to use sealed-secret instead (optional - you can delete it):
+#### Deploy PostgreSQL with sealed secret
+
+Once sealed, commit the changes:
 
 ```bash
-rm infrastructure/base/postgresql/postgresql-secret.yml
+git add infrastructure/base/postgresql/postgresql-sealed-secret.yml
+git commit -m "Add sealed PostgreSQL credentials"
+git push
 ```
 
-### Committing to Git
+ArgoCD will automatically deploy PostgreSQL with the sealed secret.
+
+### Safe to Commit to Git
 
 Safe to commit:
 - ✅ `postgresql-sealed-secret.yml` (encrypted)
@@ -71,15 +123,16 @@ Safe to commit:
 - ✅ `postgresql-deployment.yml` (references sealed secret)
 
 Never commit:
-- ❌ Plaintext `postgresql-secret.yml`
+
 - ❌ Plaintext secret files
+- ❌ `/tmp/` directory with unencrypted secrets
 
 ### How ArgoCD Uses It
 
 1. ArgoCD deploys `postgresql-sealed-secret.yml` to the cluster
-2. Sealed Secrets controller decrypts it into a normal `Secret`
-3. PostgreSQL deployment uses the decrypted secret
-4. Only your cluster can decrypt it
+2. Sealed Secrets controller automatically decrypts it into a normal `Secret`
+3. PostgreSQL deployment references the decrypted secret
+4. Only your cluster can decrypt it (encryption key never leaves the cluster)
 
 ### Updating Secrets
 
@@ -102,18 +155,53 @@ kubectl get secret -n sealed-secrets -o yaml | \
 
 ### Troubleshooting
 
-**"Failed to unseal secret"**
+#### Error: `cannot get sealed secret service: services "sealed-secrets-controller" not found`
+
+**Cause**: You're trying to seal secrets before the controller is deployed.
+
+**Solution**:
+
+1. Wait for sealed-secrets controller to be deployed by ArgoCD
+2. Verify it's running:
+
+   ```bash
+   kubectl wait --for=condition=available --timeout=300s deployment/sealed-secrets-controller -n sealed-secrets
+   ```
+
+3. Then try sealing again
+
+#### Error: `"Failed to unseal secret"`
+
+**Cause**: Secret was sealed for a different cluster or namespace.
+
+**Solution**:
 - Ensure sealed-secrets controller is running: `kubectl get pods -n sealed-secrets`
 - Verify the secret was sealed for the correct namespace
+- Check controller logs: `kubectl logs -n sealed-secrets deployment/sealed-secrets-controller`
 
-**"kubeseal command not found"**
-- Install kubeseal: `brew install kubeseal`
+#### Error: `"kubeseal command not found"`
 
-**Need to decrypt a sealed secret?**
+**Solution**:
 ```bash
-kubectl get sealedsecret postgresql-credentials \
-  -n postgresql \
-  -o jsonpath='{.status.observedGeneration}' && \
+# macOS
+brew install kubeseal
+
+# Or manually download from:
+# https://github.com/getsops/sealed-secrets/releases
+```
+
+#### How to verify sealed secret works
+
+```bash
+# Check if secret was unsealed correctly
+kubectl get secret postgresql-credentials -n postgresql -o yaml
+```
+
+You should see the `Secret` resource with decoded data.
+
+#### Need to see the actual password (for debugging)
+
+```bash
 kubectl get secret postgresql-credentials \
   -n postgresql \
   -o jsonpath='{.data.POSTGRES_PASSWORD}' | base64 -d

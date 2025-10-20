@@ -61,11 +61,15 @@ spec:
   - group: ''
     kind: Service
   - group: ''
+    kind: ServiceAccount
+  - group: ''
     kind: PersistentVolumeClaim
   - group: 'apps'
     kind: Deployment
   - group: 'apps'
     kind: StatefulSet
+  - group: 'batch'
+    kind: Job
   - group: 'networking.k8s.io'
     kind: Ingress
   roles:

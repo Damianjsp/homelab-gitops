@@ -1,8 +1,27 @@
-# PostgreSQL Service - LoadBalancer for local network access
+# PostgreSQL Internal Service - ClusterIP for internal cluster communication
 apiVersion: v1
 kind: Service
 metadata:
   name: postgresql
+  namespace: postgresql
+  labels:
+    app: postgresql
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+    protocol: TCP
+    name: postgres
+  selector:
+    app: postgresql
+
+---
+# PostgreSQL External Service - LoadBalancer for local network access
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-external
   namespace: postgresql
   labels:
     app: postgresql

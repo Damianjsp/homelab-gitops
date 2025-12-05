@@ -6,23 +6,13 @@ metadata:
   labels:
     app: n8n
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
-    nginx.ingress.kubernetes.io/websocket-services: "n8n"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    traefik.ingress.kubernetes.io/router.middlewares: ai-services-n8n-stripprefix@kubernetescrd
 spec:
-  ingressClassName: nginx
-  tls:
-  - hosts:
-    - n8n.homelab
-    secretName: n8n-tls
   rules:
-  - host: n8n.homelab
+  - host: dahousesp.asuscomm.com
     http:
       paths:
-      - path: /
+      - path: /n8n
         pathType: Prefix
         backend:
           service:

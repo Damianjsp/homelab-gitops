@@ -41,7 +41,7 @@ data:
   N8N_DIAGNOSTICS_ENABLED: "false"
 
   # Webhook Configuration (will be set via service DNS)
-  N8N_WEBHOOK_URL: "http://n8n.homelab/"
+  N8N_WEBHOOK_URL: "http://dahousesp.asuscomm.com:5678/"
 
   # Generic OAuth2 (optional - for future integration)
   GENERIC_OAUTH_ENABLED: "false"

@@ -5,7 +5,7 @@ metadata:
   name: chromadb-data-pv
 spec:
   capacity:
-    storage: 20Gi
+    storage: 10Gi
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain

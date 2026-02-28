@@ -1,0 +1,279 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: litellm-config
+  namespace: litellm
+data:
+  config.yaml: |
+    # LiteLLM Proxy Configuration
+    # Consolidated to a3258-m84ti36v-eastus2 endpoint + embeddings/reranker
+    # All API keys loaded from environment variables using os.environ/ syntax
+    
+    model_list:
+    
+      # Aliases for legacy model names used by ai-agents-crew
+      - model_name: gpt-5-mini
+        litellm_params:
+          model: openai/gpt-oss-120b
+          api_base: https://a3258-m84ti36v-eastus2.services.ai.azure.com/openai/v1
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+        model_info:
+          base_model: gpt-oss-120b
+    
+      - model_name: gpt-4o
+        litellm_params:
+          model: azure/gpt-5.2
+          api_base: https://a3258-m84ti36v-eastus2.cognitiveservices.azure.com/
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+          api_version: "2025-04-01-preview"
+        model_info:
+          base_model: azure/gpt-5.2
+    
+      - model_name: gpt-4o-mini
+        litellm_params:
+          model: openai/deepseek-v3.2-speciale
+          api_base: https://a3258-m84ti36v-eastus2.services.ai.azure.com/openai/v1
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+        model_info:
+          base_model: DeepSeek-V3.2-Speciale
+    
+      #############################################################################
+      # Azure Anthropic - Claude Models (Azure AI Foundry EastUS2)
+      # https://a3258-m84ti36v-eastus2.services.ai.azure.com/anthropic
+      #############################################################################
+      - model_name: claude-opus-4-6
+        litellm_params:
+          model: anthropic/claude-opus-4-6
+          api_base: https://a3258-m84ti36v-eastus2.services.ai.azure.com/anthropic
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+          extra_headers:
+            anthropic-version: "2023-06-01"
+        model_info:
+          base_model: claude-opus-4-6
+          input_cost_per_token: 0.000005
+          output_cost_per_token: 0.000025
+    
+      - model_name: claude-opus-4-5
+        litellm_params:
+          model: anthropic/claude-opus-4-5
+          api_base: https://a3258-m84ti36v-eastus2.services.ai.azure.com/anthropic
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+          extra_headers:
+            anthropic-version: "2023-06-01"
+        model_info:
+          base_model: claude-opus-4-5
+          input_cost_per_token: 0.000005
+          output_cost_per_token: 0.000025
+    
+      - model_name: claude-sonnet-4-6
+        litellm_params:
+          model: anthropic/claude-sonnet-4-6
+          api_base: https://a3258-m84ti36v-eastus2.services.ai.azure.com/anthropic
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+          extra_headers:
+            anthropic-version: "2023-06-01"
+        model_info:
+          base_model: claude-sonnet-4-6
+          input_cost_per_token: 0.000003
+          output_cost_per_token: 0.000015
+    
+      - model_name: claude-sonnet-4-5
+        litellm_params:
+          model: anthropic/claude-sonnet-4-5
+          api_base: https://a3258-m84ti36v-eastus2.services.ai.azure.com/anthropic
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+          extra_headers:
+            anthropic-version: "2023-06-01"
+        model_info:
+          base_model: claude-sonnet-4-5
+          input_cost_per_token: 0.000003
+          output_cost_per_token: 0.000015
+    
+      #############################################################################
+      # Azure AI Services - OpenAI-compatible Models (EastUS2)
+      # https://a3258-m84ti36v-eastus2.services.ai.azure.com/openai/v1
+      #############################################################################
+      - model_name: Kimi-K2.5
+        litellm_params:
+          model: openai/Kimi-K2.5
+          api_base: https://a3258-m84ti36v-eastus2.services.ai.azure.com/openai/v1
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+        model_info:
+          base_model: Kimi-K2.5
+          input_cost_per_token: 0.0000006
+          output_cost_per_token: 0.0000025
+    
+      - model_name: grok-4-america
+        litellm_params:
+          model: openai/grok-4
+          api_base: https://a3258-m84ti36v-eastus2.services.ai.azure.com/openai/v1
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+        model_info:
+          base_model: openai/grok-4
+          input_cost_per_token: 0.000003
+          output_cost_per_token: 0.000015
+    
+      - model_name: deepseek-v3.2-speciale
+        litellm_params:
+          model: openai/DeepSeek-V3.2-Speciale
+          api_base: https://a3258-m84ti36v-eastus2.services.ai.azure.com/openai/v1
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+        model_info:
+          base_model: DeepSeek-V3.2-Speciale
+          input_cost_per_token: 0.00000058
+          output_cost_per_token: 0.00000168
+    
+      - model_name: gpt-oss-120b
+        litellm_params:
+          model: openai/gpt-oss-120b
+          api_base: https://a3258-m84ti36v-eastus2.services.ai.azure.com/openai/v1
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+        model_info:
+          base_model: gpt-oss-120b
+          input_cost_per_token: 0.00000015
+          output_cost_per_token: 0.0000006
+    
+      #############################################################################
+      # Azure OpenAI - EastUS2 Cognitive Services
+      # https://a3258-m84ti36v-eastus2.cognitiveservices.azure.com/
+      #############################################################################
+      - model_name: gpt-5.2
+        litellm_params:
+          model: azure/gpt-5.2
+          api_base: https://a3258-m84ti36v-eastus2.cognitiveservices.azure.com/
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+          api_version: "2025-04-01-preview"
+        model_info:
+          base_model: azure/gpt-5.2
+          input_cost_per_token: 0.00000175
+          output_cost_per_token: 0.000014
+    
+      - model_name: gpt-5.2-codex
+        litellm_params:
+          model: azure/gpt-5.2-codex
+          api_base: https://a3258-m84ti36v-eastus2.cognitiveservices.azure.com/
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+          api_version: "2025-04-01-preview"
+        model_info:
+          base_model: azure/gpt-5.2-codex
+          input_cost_per_token: 0.00000175
+          output_cost_per_token: 0.000014
+    
+      - model_name: gpt-image-1.5
+        litellm_params:
+          model: azure/gpt-image-1.5
+          api_base: https://a3258-m84ti36v-eastus2.cognitiveservices.azure.com/
+          api_key: os.environ/AZURE_ANTHROPIC_API_KEY
+          api_version: "2024-02-01"
+        model_info:
+          base_model: azure/gpt-image-1.5
+    
+      #############################################################################
+      # Embeddings - dalabs-europe
+      # https://dalabs-europe.openai.azure.com/
+      #############################################################################
+      - model_name: text-embedding-3-large
+        litellm_params:
+          model: azure/text-embedding-3-large
+          api_base: https://dalabs-europe.openai.azure.com/
+          api_key: os.environ/AZURE_EUROPE_API_KEY
+          api_version: "2024-08-01-preview"
+        model_info:
+          base_model: azure/text-embedding-3-large
+    
+      - model_name: text-embedding-3-small
+        litellm_params:
+          model: azure/text-embedding-3-small
+          api_base: https://dalabs-europe.openai.azure.com/
+          api_key: os.environ/AZURE_EUROPE_API_KEY
+          api_version: "2024-08-01-preview"
+        model_info:
+          base_model: azure/text-embedding-3-small
+    
+      #############################################################################
+      # Reranker & Embeddings - dalabs-america
+      # https://dalabs-america.openai.azure.com/
+      #############################################################################
+      - model_name: cohere-rerank-v4-fast
+        litellm_params:
+          model: azure_ai/Cohere-rerank-v4.0-fast
+          api_base: https://dalabs-america.openai.azure.com/
+          api_key: os.environ/AZURE_AMERICA_API_KEY
+          api_version: "2024-05-01-preview"
+        model_info:
+          base_model: cohere/rerank-v4-fast
+    
+      - model_name: cohere-embed-v3-multilingual
+        litellm_params:
+          model: azure_ai/Cohere-embed-v3-multilingual
+          api_base: https://dalabs-america.openai.azure.com/
+          api_key: os.environ/AZURE_AMERICA_API_KEY
+          api_version: "2024-05-01-preview"
+        model_info:
+          base_model: cohere/embed-multilingual-v3.0
+    
+    #############################################################################
+    # LiteLLM Settings - Reliability
+    #############################################################################
+    litellm_settings:
+      num_retries: 3
+      request_timeout: 180
+      drop_params: true
+    
+      # General fallbacks (all error types)
+      fallbacks:
+        # Claude chain: opus-4-6 -> sonnet-4-6 -> opus-4-5 -> sonnet-4-5
+        - claude-opus-4-6: ["claude-sonnet-4-6", "claude-opus-4-5"]
+        - claude-sonnet-4-6: ["claude-sonnet-4-5", "claude-opus-4-5"]
+        - claude-opus-4-5: ["claude-sonnet-4-5", "claude-sonnet-4-6"]
+        - claude-sonnet-4-5: ["claude-sonnet-4-6", "claude-opus-4-5"]
+        # GPT-5.2 fallbacks
+        - gpt-5.2: ["claude-opus-4-6", "deepseek-v3.2-speciale"]
+        - gpt-5.2-codex: ["gpt-5.2", "claude-opus-4-6"]
+        # Alternative models -> GPT/Claude fallbacks
+        - Kimi-K2.5: ["gpt-5.2", "claude-opus-4-6"]
+        - grok-4-america: ["gpt-5.2", "claude-opus-4-6"]
+        - deepseek-v3.2-speciale: ["gpt-5.2", "claude-opus-4-6"]
+        - gpt-oss-120b: ["gpt-5.2", "claude-opus-4-6"]
+    
+      # Context window overflow fallbacks
+      context_window_fallbacks:
+        - claude-opus-4-6: ["gpt-5.2"]
+        - claude-sonnet-4-6: ["gpt-5.2"]
+        - claude-opus-4-5: ["gpt-5.2"]
+        - claude-sonnet-4-5: ["gpt-5.2"]
+    
+      # Content policy violation fallbacks (cross-provider)
+      content_policy_fallbacks:
+        - gpt-5.2: ["claude-opus-4-6"]
+        - claude-opus-4-6: ["gpt-5.2"]
+    
+    #############################################################################
+    # Router Settings
+    #############################################################################
+    router_settings:
+      routing_strategy: simple-shuffle
+      allowed_fails: 5
+      cooldown_time: 120
+      enable_pre_call_checks: true
+      retry_policy:
+        BadRequestErrorRetries: 0
+        AuthenticationErrorRetries: 0
+        ContentPolicyViolationErrorRetries: 0
+        TimeoutErrorRetries: 3
+        RateLimitErrorRetries: 3
+        InternalServerErrorRetries: 2
+      allowed_fails_policy:
+        BadRequestErrorAllowedFails: 1000
+        ContentPolicyViolationErrorAllowedFails: 1000
+        RateLimitErrorAllowedFails: 100
+        AuthenticationErrorAllowedFails: 3
+        TimeoutErrorAllowedFails: 10
+        InternalServerErrorAllowedFails: 5
+    
+    #############################################################################
+    # General Settings
+    #############################################################################
+    general_settings:
+      master_key: os.environ/LITELLM_MASTER_KEY
+    

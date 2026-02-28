@@ -84,18 +84,20 @@ spec:
           httpGet:
             path: /
             port: 3000
-          initialDelaySeconds: 60
+            scheme: HTTP
+          initialDelaySeconds: 90
           periodSeconds: 30
           timeoutSeconds: 10
-          failureThreshold: 3
+          failureThreshold: 5
         readinessProbe:
           httpGet:
             path: /
             port: 3000
-          initialDelaySeconds: 30
+            scheme: HTTP
+          initialDelaySeconds: 60
           periodSeconds: 10
           timeoutSeconds: 5
-          failureThreshold: 3
+          failureThreshold: 5
         volumeMounts:
         - name: storage
           mountPath: /rails/storage

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sure-worker
+  namespace: sure
+  labels:
+    app: sure
+    component: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sure
+      component: worker
+  template:
+    metadata:
+      labels:
+        app: sure
+        component: worker
+    spec:
+      containers:
+      - name: worker
+        image: ghcr.io/we-promise/sure:stable
+        command: ["bundle", "exec", "sidekiq"]
+        env:
+        - name: RAILS_ENV
+          value: production
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: sure-secrets
+              key: DATABASE_URL
+        - name: SECRET_KEY_BASE
+          valueFrom:
+            secretKeyRef:
+              name: sure-secrets
+              key: SECRET_KEY_BASE
+        - name: REDIS_URL
+          value: redis://redis.sure.svc.cluster.local:6379/0
+        - name: RAILS_LOG_TO_STDOUT
+          value: "true"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"

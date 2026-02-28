@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sure
+  namespace: sure
+  labels:
+    app: sure
+spec:
+  type: LoadBalancer
+  selector:
+    app: sure
+    component: web
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+    protocol: TCP

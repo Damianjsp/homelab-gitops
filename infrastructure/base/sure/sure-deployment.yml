@@ -63,6 +63,10 @@ spec:
           value: "true"
         - name: RAILS_ASSUME_SSL
           value: "false"
+        - name: SELF_HOSTED
+          value: "true"
+        - name: APP_DOMAIN
+          value: "192.168.79.35"
         - name: WEB_CONCURRENCY
           value: "2"
         - name: RAILS_MAX_THREADS

@@ -67,6 +67,12 @@ spec:
           value: "2"
         - name: RAILS_MAX_THREADS
           value: "5"
+        - name: OPENAI_ACCESS_TOKEN
+          value: "sk-homelab-ai-key"
+        - name: OPENAI_URI_BASE
+          value: "http://litellm-proxy.litellm.svc.cluster.local:4000/v1"
+        - name: OPENAI_MODEL
+          value: "gpt-5.2"
         resources:
           requests:
             memory: "512Mi"
@@ -97,3 +103,4 @@ spec:
       - name: storage
         persistentVolumeClaim:
           claimName: sure-storage
+# NOTE: patch below appended — AI config via LiteLLM

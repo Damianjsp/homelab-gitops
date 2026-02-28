@@ -74,7 +74,7 @@ spec:
         - name: OPENAI_ACCESS_TOKEN
           value: "sk-homelab-ai-key"
         - name: OPENAI_URI_BASE
-          value: "http://litellm-proxy.litellm.svc.cluster.local:4000/v1"
+          value: "http://litellm-proxy.litellm.svc.cluster.local:4000/"
         - name: OPENAI_MODEL
           value: "gpt-5.2"
         resources:

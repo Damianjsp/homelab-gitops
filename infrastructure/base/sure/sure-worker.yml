@@ -39,6 +39,12 @@ spec:
           value: redis://redis.sure.svc.cluster.local:6379/0
         - name: RAILS_LOG_TO_STDOUT
           value: "true"
+        - name: OPENAI_ACCESS_TOKEN
+          value: "sk-homelab-ai-key"
+        - name: OPENAI_URI_BASE
+          value: "http://litellm-proxy.litellm.svc.cluster.local:4000/v1/"
+        - name: OPENAI_MODEL
+          value: "gpt-5.2"
         resources:
           requests:
             memory: "256Mi"

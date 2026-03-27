@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: searxng-settings
+  namespace: searxng
+  labels:
+    app: searxng
+data:
+  settings.yml: |
+    use_default_settings: true
+
+    general:
+      instance_name: "Mimir Search"
+      privacypolicy_url: false
+      donation_url: false
+      contact_url: false
+      enable_metrics: false
+      debug: false
+
+    search:
+      safe_search: 0
+      autocomplete: "duckduckgo"
+      default_lang: "en"
+      formats:
+        - html
+        - json
+
+    server:
+      secret_key: "mimir-searxng-2026-secret-key"
+      limiter: false
+      image_proxy: false
+      method: "GET"
+      port: 8080
+      bind_address: "0.0.0.0"
+
+    ui:
+      static_use_hash: true
+      default_theme: simple
+      results_on_new_tab: false
+
+    engines:
+      - name: google
+        engine: google
+        shortcut: g
+        disabled: false
+
+      - name: duckduckgo
+        engine: duckduckgo
+        shortcut: ddg
+        disabled: false
+
+      - name: bing
+        engine: bing
+        shortcut: b
+        disabled: false
+
+      - name: wikipedia
+        engine: wikipedia
+        shortcut: wp
+        disabled: false
+
+      - name: github
+        engine: github
+        shortcut: gh
+        disabled: false
+
+      - name: stackoverflow
+        engine: stackoverflow
+        shortcut: so
+        disabled: false
+
+      - name: arxiv
+        engine: arxiv
+        shortcut: ar
+        disabled: false
+
+    outgoing:
+      request_timeout: 5.0
+      max_request_timeout: 15.0
+      useragent_suffix: ""
+      pool_connections: 100
+      pool_maxsize: 20

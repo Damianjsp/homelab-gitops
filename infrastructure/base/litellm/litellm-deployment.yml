@@ -30,7 +30,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: litellm
-        image: dahomelab.azurecr.io/litellm-proxy:1.2.1
+        image: mimircrsce.azurecr.io/litellm-proxy:1.2.1
         imagePullPolicy: Always
         ports:
         - containerPort: 4000

@@ -13,7 +13,7 @@ spec:
     path: infrastructure/base/flaresolverr
   destination:
     server: https://kubernetes.default.svc
-    namespace: flaresolverr
+    namespace: media-servers
   syncPolicy:
     automated:
       prune: false

@@ -13,7 +13,7 @@ spec:
     path: infrastructure/base/jellyseerr
   destination:
     server: https://kubernetes.default.svc
-    namespace: jellyseerr
+    namespace: media-servers
   syncPolicy:
     automated:
       prune: false

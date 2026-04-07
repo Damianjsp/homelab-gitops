@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flaresolverr
-  namespace: flaresolverr
+  namespace: media-servers
   labels:
     app: flaresolverr
 spec:

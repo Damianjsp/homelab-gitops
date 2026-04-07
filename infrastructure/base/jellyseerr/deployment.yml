@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jellyseerr
-  namespace: jellyseerr
+  namespace: media-servers
   labels:
     app: jellyseerr
 spec:

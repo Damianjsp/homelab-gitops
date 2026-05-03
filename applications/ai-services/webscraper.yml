@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: webscraper
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ai-services
+  source:
+    repoURL: https://github.com/Damianjsp/homelab-gitops
+    targetRevision: main
+    path: infrastructure/base/webscraper
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: webscraper
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 3
